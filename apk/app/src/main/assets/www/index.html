@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>安全知识教育一键完成工具 本地版V1.2</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="aurora"><span></span><span></span><span></span></div>
+
+  <div class="toast-wrap" id="toasts"></div>
+
+  <div class="shell">
+    <!-- 顶部标题 -->
+    <div class="header glass">
+      <div>
+        <div class="title gradient-text">安全知识教育一键完成工具</div>
+        <div class="sub">本地版 V1.2</div>
+      </div>
+      <div class="status-pill">
+        <span class="dot" id="statusDot"></span>
+        <span id="statusText">就绪</span>
+      </div>
+    </div>
+
+    <!-- 标签栏 -->
+    <div class="tabs glass">
+      <button class="tab active" data-tab="run">一键完成</button>
+      <button class="tab" data-tab="db">题库管理</button>
+    </div>
+
+    <!-- 一键完成 -->
+    <div class="panel glass active" id="panel-run">
+      <div class="section-title">选择方式</div>
+      <div class="seg" id="modeSeg">
+        <button class="active" data-mode="login">登录方式</button>
+        <button data-mode="userid">userId 方式</button>
+      </div>
+
+      <div id="loginBox">
+        <div class="field">
+          <label>学校关键词</label>
+          <div class="row">
+            <input class="input-glass" id="schoolKw" placeholder="如：南京信息工程大学" />
+            <button class="btn" id="searchBtn" style="flex:0 0 auto">搜索学校</button>
+          </div>
+          <div class="school-list" id="schoolList"></div>
+        </div>
+        <div class="field">
+          <label>账号</label>
+          <input class="input-glass" id="acc" placeholder="学号 / 手机号" />
+        </div>
+        <div class="field">
+          <label>密码</label>
+          <input class="input-glass" id="pwd" type="password" placeholder="登录密码" />
+        </div>
+      </div>
+
+      <div id="useridBox" class="hidden">
+        <div class="field">
+          <label>平台链接</label>
+          <input class="input-glass" id="urlInput" placeholder="粘贴完整网址，自动提取 userId（如 http://wap.xiaoyuananquantong.com/...?userid=xxx）" />
+        </div>
+        <div class="field">
+          <label>userId</label>
+          <input class="input-glass" id="uid" placeholder="也可直接输入 userId（长串纯数字）" />
+        </div>
+      </div>
+
+      <button class="btn primary glow block" id="startBtn" style="margin-top:6px">开始执行</button>
+
+      <div class="console" id="console"></div>
+    </div>
+
+    <!-- 题库管理 -->
+    <div class="panel glass" id="panel-db">
+      <div class="warn-banner">
+        <span>⚠️</span>
+        <span>题库是自动答题的唯一答案来源，任何增删都直接影响考试结果，请谨慎操作。</span>
+      </div>
+
+      <div class="section-title">题库统计</div>
+      <div class="stats" id="stats">
+        <div class="stat-card"><div class="num" id="stSingle">-</div><div class="lbl">单选</div></div>
+        <div class="stat-card"><div class="num" id="stMulti">-</div><div class="lbl">多选</div></div>
+        <div class="stat-card"><div class="num" id="stJudge">-</div><div class="lbl">判断</div></div>
+        <div class="stat-card"><div class="num" id="stTotal">-</div><div class="lbl">合计</div></div>
+      </div>
+      <button class="btn" id="refreshStats">刷新统计</button>
+
+      <div class="section-title" style="margin-top:20px">查看题库</div>
+      <div class="row">
+        <input class="input-glass" id="viewKw" placeholder="按题目ID搜索（可留空看全部）" />
+        <button class="btn" id="viewBtn" style="flex:0 0 auto">查询</button>
+      </div>
+      <div class="db-table-wrap">
+        <table class="db-table">
+          <thead><tr><th>题目ID</th><th>答案</th><th>题型</th></tr></thead>
+          <tbody id="viewBody"></tbody>
+        </table>
+      </div>
+      <div class="pager">
+        <button class="btn" id="viewPrev">上一页</button>
+        <span id="viewPageInfo">-</span>
+        <button class="btn" id="viewNext">下一页</button>
+      </div>
+
+      <div class="section-title" style="margin-top:20px">增加题目（谨慎）</div>
+      <div class="field">
+        <label>题目ID（questionId）</label>
+        <input class="input-glass" id="addQid" placeholder="题目ID" />
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>答案</label>
+          <input class="input-glass" id="addAns" placeholder="如 A / AB / 对" />
+        </div>
+        <div class="field">
+          <label>题型</label>
+          <select class="input-glass" id="addQt">
+            <option value="1">单选</option>
+            <option value="2">多选</option>
+            <option value="3">判断</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn primary block" id="addBtn">添加题目</button>
+
+      <div class="section-title" style="margin-top:20px">删除题目（高危）</div>
+      <div class="field">
+        <label>题目ID（questionId）</label>
+        <input class="input-glass" id="delQid" placeholder="要删除的题目ID" />
+      </div>
+      <button class="btn danger block" id="delBtn">删除题目</button>
+
+      <div class="console" id="dbConsole" style="height:180px"></div>
+    </div>
+  </div>
+
+  <!-- 删除确认模态框 -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <h3>高危警告</h3>
+      <p>你正在从核心题库删除记录：<br><b id="modalQid"></b><br><br>删除后无法恢复，且会导致对应题目在考试时无答案。确认删除？</p>
+      <div class="acts">
+        <button class="btn" id="modalCancel">取消</button>
+        <button class="btn danger" id="modalOk">确认删除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 结业证书弹窗 -->
+  <div class="modal-overlay" id="certModal">
+    <div class="modal cert-modal">
+      <h3>结业证书</h3>
+      <p class="cert-tip">考试满分！结业证书已生成，点击下方按钮保存到本地。</p>
+      <div class="cert-img-wrap">
+        <img id="certImg" alt="结业证书" />
+      </div>
+      <div class="cert-path" id="certPath"></div>
+      <div class="acts">
+        <a class="btn primary" id="certDownload" download="结业证书.png">保存到本地</a>
+        <button class="btn" id="certClose">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="db.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
