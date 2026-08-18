@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>安全教育工具演示软件v2.1</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="aurora"><span></span><span></span><span></span></div>
+  <div class="toast-wrap" id="toasts"></div>
+
+  <div class="app-shell">
+    <!-- 顶部导航（电脑端） -->
+    <nav class="topnav glass" id="topNav">
+      <div class="brand">
+        <span class="brand-name gradient-text">安全教育工具演示软件</span>
+        <span class="ver">v2.1</span>
+      </div>
+      <div class="nav-tabs" id="navTabs">
+        <button class="navtab active" data-page="login" data-i18n="navLogin">⚡ 登录完成</button>
+        <button class="navtab" data-page="reg" data-i18n="navReg">📝 注册完成</button>
+        <button class="navtab" data-page="mine" data-i18n="navMine">👤 我的</button>
+      </div>
+    </nav>
+
+    <!-- 通知软引导横幅（权限被拒后显示） -->
+    <div class="notif-banner glass hidden" id="notifBanner">🔔 <span data-i18n="notifBanner">开启通知，第一时间接收寻亲线索</span> ›</div>
+
+    <main class="pages" id="pages">
+
+      <!-- ============ 页面1：登录完成 ============ -->
+      <section class="page active" id="page-login">
+        <!-- 公益头图轮播 -->
+        <div class="bbhj-carousel glass" id="carouselBox">
+          <div class="carousel-track" id="carouselTrack"></div>
+          <div class="carousel-dots" id="carouselDots"></div>
+          <button class="carousel-all" id="carouselAllBtn" data-i18n="viewAll">查看全部 ›</button>
+        </div>
+
+        <div class="panel glass">
+          <div class="login-cards">
+            <!-- v2.1：登录双模式——账号密码（搜索学校→账号→密码） / 链接userId -->
+            <div class="login-card" id="cardUserid">
+              <div class="mode-tabs">
+                <button type="button" class="mode-tab active" id="tabAcct" data-i18n="modeLogin">账号密码</button>
+                <button type="button" class="mode-tab" id="tabUid" data-i18n="modeUserid">链接 / userId</button>
+              </div>
+
+              <!-- 模式一：账号密码登录 -->
+              <div id="loginAcctBox">
+                <div class="field">
+                  <label data-i18n="school">学校</label>
+                  <div class="row">
+                    <input class="input-glass" id="loginSchoolKw" placeholder="输入学校名称关键词" data-i18n-ph="phSchool2" />
+                    <button class="btn" id="loginSearchBtn" data-i18n="searchSchool">搜索学校</button>
+                  </div>
+                  <div class="school-list" id="loginSchoolList"></div>
+                  <div class="picker-field" id="loginSchoolField">
+                    <span class="pf-value empty" id="loginSchoolName">搜索后点击选择学校</span>
+                    <span class="arrow">›</span>
+                  </div>
+                </div>
+                <div class="field">
+                  <label data-i18n="account">账号</label>
+                  <input class="input-glass" id="loginUser" placeholder="学号 / 手机号" data-i18n-ph="phAccount" autocomplete="off" />
+                </div>
+                <div class="field">
+                  <label data-i18n="password">密码</label>
+                  <input class="input-glass" id="loginPass" type="password" placeholder="平台登录密码" data-i18n-ph="phPwd" autocomplete="off" />
+                </div>
+              </div>
+
+              <!-- 模式二：链接 / userId -->
+              <div id="loginUidBox" style="display:none">
+                <div class="field">
+                  <label><span data-i18n="linkOrUid">链接 / userId</span>
+                    <span class="help-dot" id="uidHelpBtn" title="?">?</span>
+                  </label>
+                  <input class="input-glass" id="uidInput" placeholder="粘贴链接或输入userId" data-i18n-ph="phUid" />
+                </div>
+              </div>
+
+              <div class="disclaimer-row">
+                <label class="checkbox-wrap"><input type="checkbox" id="runAgree" /><span class="checkmark"></span></label>
+                <span class="disclaimer-text" data-i18n="disclaimerShort">我已阅读并同意</span>
+                <a href="#" class="disclaimer-link" id="runShowTerms" data-i18n="disclaimer">免责声明</a>
+              </div>
+              <button class="btn primary glow block" id="startBtn" data-i18n="startRun">开始自动完成</button>
+            </div>
+          </div>
+          <div class="console-wrap">
+            <div class="console-head">
+              <span class="console-title" data-i18n="runLog">运行日志</span>
+              <button class="mini-btn" id="clearLogBtn" data-i18n="clear">清空</button>
+            </div>
+            <div class="console" id="console"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 页面2：注册完成 ============ -->
+      <section class="page" id="page-reg">
+        <div class="bbhj-carousel glass" id="carouselBox2">
+          <div class="carousel-track" id="carouselTrack2"></div>
+          <div class="carousel-dots" id="carouselDots2"></div>
+          <button class="carousel-all" id="carouselAllBtn2" data-i18n="viewAll">查看全部 ›</button>
+        </div>
+
+        <div class="panel glass">
+          <!-- v2.1：注册流程重排：学校 → 学院 → 专业 → 姓名 → 账号；学院/专业改自定义选择器 -->
+          <div class="field">
+            <label data-i18n="school">学校</label>
+            <div class="row">
+              <input class="input-glass" id="regSchoolKw" placeholder="输入学校名称关键词" data-i18n-ph="phSchool2" />
+              <button class="btn" id="regSearchBtn" data-i18n="searchSchool">搜索学校</button>
+            </div>
+            <div class="school-list" id="regSchoolList"></div>
+            <div class="picker-field" id="regSchoolField">
+              <span class="pf-value" id="regSchoolName">未选择学校</span>
+              <span class="arrow">›</span>
+            </div>
+          </div>
+          <div class="field">
+            <label data-i18n="faculty">学院</label>
+            <div class="picker-field" id="regFacultyField">
+              <span class="pf-value empty" id="regFacultyName">请先选择学校</span>
+              <span class="arrow">›</span>
+            </div>
+          </div>
+          <div class="field">
+            <label data-i18n="major">专业</label>
+            <div class="picker-field" id="regClassField">
+              <span class="pf-value empty" id="regClassName">请先选择学院</span>
+              <span class="arrow">›</span>
+            </div>
+          </div>
+          <div class="field">
+            <label data-i18n="name">姓名</label>
+            <input class="input-glass" id="regName" placeholder="真实姓名" data-i18n-ph="phName" />
+          </div>
+          <div class="field">
+            <label data-i18n="accountReg">账号</label>
+            <input class="input-glass" id="regAccount" placeholder="登录账号，默认同姓名" data-i18n-ph="phAccountReg" />
+            <div class="field-hint" data-i18n="nameHint">ℹ️ 注册后初始密码与账号相同（后续可在平台自行修改密码）</div>
+          </div>
+
+          <div class="disclaimer-row">
+            <label class="checkbox-wrap"><input type="checkbox" id="regAgree" /><span class="checkmark"></span></label>
+            <span class="disclaimer-text" data-i18n="disclaimerShort">我已阅读并同意</span>
+            <a href="#" class="disclaimer-link" id="regShowTerms" data-i18n="disclaimer">免责声明</a>
+          </div>
+          <button class="btn primary glow block" id="regRunBtn" data-i18n="regAndRun">一键注册并自动完成</button>
+
+          <div class="console-wrap">
+            <div class="console-head">
+              <span class="console-title" data-i18n="runLog">运行日志</span>
+              <button class="mini-btn" id="clearRegLogBtn" data-i18n="clear">清空</button>
+            </div>
+            <div class="console" id="regConsole"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 页面3：我的 ============ -->
+      <section class="page" id="page-mine">
+        <div class="panel glass settings-panel">
+          <!-- 通用设置 -->
+          <div class="settings-group">
+            <div class="settings-title" data-i18n="sgCommon">⚙️ 通用设置</div>
+            <div class="settings-row">
+              <div class="settings-label" data-i18n="themeMode">主题模式</div>
+              <div class="theme-picker" id="themePicker">
+                <button class="theme-dot" data-theme="midnight" style="background:linear-gradient(135deg,#1e3a8a,#0f172a)" title="午夜深蓝"></button>
+                <button class="theme-dot" data-theme="aurora" style="background:linear-gradient(135deg,#ec4899,#8b5cf6)" title="极光粉紫"></button>
+                <button class="theme-dot" data-theme="ice" style="background:linear-gradient(135deg,#22d3ee,#0e7490)" title="冰岛极光"></button>
+                <button class="theme-dot" data-theme="sunset" style="background:linear-gradient(135deg,#fb923c,#ef4444)" title="落日珊瑚"></button>
+                <button class="theme-dot" data-theme="snow" style="background:linear-gradient(135deg,#f8fafc,#cbd5e1)" title="雪境白"></button>
+                <button class="theme-dot" data-theme="custom" style="background:conic-gradient(#ec4899,#8b5cf6,#22d3ee,#4ade80,#facc15,#ec4899)" title="自定义CSS" id="customThemeBtn">CSS</button>
+              </div>
+            </div>
+            <div class="settings-row custom-css-row hidden" id="customCssRow">
+              <textarea class="input-glass" id="customCssInput" rows="4" placeholder="/* 自定义CSS，例如：.brand-name{color:#f59e0b} */"></textarea>
+              <button class="btn" id="applyCustomCss" data-i18n="apply">应用</button>
+            </div>
+            <div class="settings-row">
+              <div class="settings-label" data-i18n="language">语言选择</div>
+              <div class="seg small" id="langSeg">
+                <button class="active" data-lang="zh">简体中文</button>
+                <button data-lang="en">English</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 公益内容 -->
+          <div class="settings-group">
+            <div class="settings-title" data-i18n="sgCharity">💖 公益内容（宝贝回家）</div>
+            <div class="settings-row">
+              <div class="settings-label"><span data-i18n="enableCarousel">启用公益轮播</span><div class="settings-sub" data-i18n="carouselSub">开启后，软件主界面开始轮播走失儿童信息</div></div>
+              <label class="switch"><input type="checkbox" id="setCarousel" checked /><span class="slider"></span></label>
+            </div>
+            <div class="settings-row link-row" id="openBbhjPage">
+              <div class="settings-label" data-i18n="bbhjPage">宝贝回家 · 寻亲墙</div>
+              <span class="arrow">›</span>
+            </div>
+            <div class="settings-row link-row" id="openHistoryBtn">
+              <div class="settings-label" data-i18n="viewHistory">查看播放记录</div>
+              <span class="arrow">›</span>
+            </div>
+          </div>
+
+          <!-- 显示与通知设置 -->
+          <div class="settings-group">
+            <div class="settings-title" data-i18n="sgDisplay">🔔 显示与通知设置</div>
+            <div class="settings-row">
+              <div class="settings-label" data-i18n="notif">消息通知</div>
+              <label class="switch"><input type="checkbox" id="setNotif" checked /><span class="slider"></span></label>
+            </div>
+            <div class="settings-row">
+              <div class="settings-label" data-i18n="fontSize">字体大小</div>
+              <div class="seg small" id="fontSeg">
+                <button data-font="s" data-i18n="fontS">小</button>
+                <button class="active" data-font="m" data-i18n="fontM">中</button>
+                <button data-font="l" data-i18n="fontL">大</button>
+              </div>
+            </div>
+            <div class="settings-row">
+              <div class="settings-label" data-i18n="watermark">显示来源水印</div>
+              <label class="switch"><input type="checkbox" id="setWatermark" checked /><span class="slider"></span></label>
+            </div>
+          </div>
+
+          <!-- 数据与缓存 -->
+          <div class="settings-group">
+            <div class="settings-title" data-i18n="sgData">💾 数据与缓存</div>
+            <div class="settings-row">
+              <div class="settings-label" data-i18n="cacheSize">缓存大小</div>
+              <div class="settings-value" id="cacheSize">0 KB</div>
+            </div>
+            <div class="settings-row">
+              <div class="settings-label" data-i18n="clearCache">清除缓存</div>
+              <button class="btn small" id="clearCacheBtn" data-i18n="clearBtn">清除</button>
+            </div>
+            <div class="settings-row">
+              <div class="settings-label"><span data-i18n="autoUpdate">数据自动更新</span><div class="settings-sub" data-i18n="autoUpdateSub">开启后每次启动自动拉取最新公益数据</div></div>
+              <label class="switch"><input type="checkbox" id="setAutoUpdate" checked /><span class="slider"></span></label>
+            </div>
+          </div>
+
+          <!-- 关于与法律声明（v2.1.1：第三方声明/公益致谢收进二级菜单，作者信息居中） -->
+          <div class="settings-group">
+            <div class="settings-title" data-i18n="sgAbout">📜 关于与法律声明</div>
+            <div class="settings-row">
+              <div class="settings-label" data-i18n="version">版本信息</div>
+              <div class="settings-value">v2.1</div>
+            </div>
+            <div class="settings-row link-row" id="openLicenseBtn">
+              <div class="settings-label" data-i18n="ossLicense">开源许可</div>
+              <span class="arrow">›</span>
+            </div>
+            <div class="settings-row link-row" id="openNoticeBtn">
+              <div class="settings-label" data-i18n="thirdParty">第三方声明（NOTICE）</div>
+              <span class="arrow">›</span>
+            </div>
+            <div class="settings-row link-row" id="openThanksBtn">
+              <div class="settings-label" data-i18n="charityThanks">公益数据致谢</div>
+              <span class="arrow">›</span>
+            </div>
+            <div class="about-author">
+              <div class="author-title" data-i18n="authorInfo">—— 作者信息 ——</div>
+              <p>作者：Leeyus · 哔哩哔哩 UID:507049026</p>
+              <p>微信公众号：白格影音-银磷档案</p>
+              <p><a href="https://github.com/Leeyus-lab/jsaq" target="_blank">github.com/Leeyus-lab/jsaq</a></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 宝贝回家：历史列表页 ============ -->
+      <section class="page" id="page-bbhj">
+        <div class="panel glass">
+          <div class="bbhj-head">
+            <button class="btn back-btn" id="bbhjBack" data-i18n="back">‹ 返回</button>
+            <span class="bbhj-title">🧡 <span data-i18n="bbhjTitle">宝贝回家 · 寻亲墙</span></span>
+            <button class="btn small" id="openFollowBtn" data-i18n="followList">关注列表</button>
+          </div>
+          <div class="row bbhj-searchbar">
+            <input class="input-glass" id="bbhjSearch" placeholder="搜索姓名 / 地点 / 年份" data-i18n-ph="phSearch" />
+            <button class="btn" id="bbhjSearchBtn" data-i18n="search">搜索</button>
+            <button class="btn" id="bbhjRefreshBtn" data-i18n="refresh">刷新</button>
+          </div>
+          <div class="bbhj-list" id="bbhjList"></div>
+          <button class="btn block" id="bbhjMoreBtn" data-i18n="loadMore">加载更多</button>
+        </div>
+      </section>
+
+      <!-- ============ 宝贝回家：详情页 ============ -->
+      <section class="page" id="page-detail">
+        <div class="panel glass detail-panel">
+          <button class="btn back-btn" id="detailBack" data-i18n="back">‹ 返回</button>
+          <div class="detail-hero">
+            <img id="detailPhoto" alt="照片" />
+            <div class="detail-name-row">
+              <span class="detail-name" id="detailName"></span>
+              <span class="detail-gender" id="detailGender"></span>
+            </div>
+          </div>
+          <div class="detail-info">
+            <div class="info-row"><span class="k" data-i18n="dBirth">出生日期</span><span class="v" id="detailBirth"></span></div>
+            <div class="info-row"><span class="k" data-i18n="dLostTime">走失时间</span><span class="v" id="detailLostTime"></span></div>
+            <div class="info-row"><span class="k" data-i18n="dLostPlace">走失地点</span><span class="v" id="detailLostPlace"></span></div>
+            <div class="info-row"><span class="k" data-i18n="dFeature">体貌特征</span><span class="v" id="detailFeature"></span></div>
+          </div>
+          <div class="detail-contact glass-inset">
+            <div class="contact-title" data-i18n="dContact">📞 宝贝回家官方联系方式</div>
+            <div class="info-row"><span class="k" data-i18n="dTel">电话</span><span class="v" id="detailTel"></span></div>
+            <div class="info-row"><span class="k" data-i18n="dMobile">手机</span><span class="v" id="detailMobile"></span></div>
+            <div class="info-row"><span class="k" data-i18n="dQQ">QQ群</span><span class="v" id="detailQQ"></span></div>
+            <div class="info-row"><span class="k" data-i18n="dAddr">地址</span><span class="v" id="detailAddr"></span></div>
+            <div class="info-row"><span class="k" data-i18n="dTime">服务时间</span><span class="v" id="detailService"></span></div>
+          </div>
+          <div class="row detail-acts">
+            <button class="btn primary" id="posterBtn" data-i18n="makePoster">🖼 生成海报分享</button>
+            <button class="btn" id="followBtn" data-i18n="followCase">💗 关注此案例</button>
+          </div>
+          <div class="src-watermark" id="detailWatermark">数据来源：起零数据公益API · 宝贝回家寻亲网</div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 底部导航（手机端） -->
+    <nav class="bottomnav glass" id="bottomNav">
+      <button class="navtab active" data-page="login" data-i18n="navLogin">⚡<span>登录完成</span></button>
+      <button class="navtab" data-page="reg" data-i18n="navReg">📝<span>注册完成</span></button>
+      <button class="navtab" data-page="mine" data-i18n="navMine">👤<span>我的</span></button>
+    </nav>
+  </div>
+
+  <!-- userId 帮助弹窗 -->
+  <div class="modal-overlay" id="helpModal">
+    <div class="modal">
+      <h3 data-i18n="howGetUid">如何获取链接 / userId？</h3>
+      <div class="terms-body">
+        <p><span class="terms-title" data-i18n="getLink">获取链接：</span><span data-i18n="getLinkDesc">在微信里打开安全教育平台并登录，点击页面右上角"…"，选择"复制链接"。链接里 userid= 后面那串数字就是 User ID。</span></p>
+        <p class="eg">例如：...userid=2081342242378772482...<br>→ User ID = 2081342242378772482</p>
+      </div>
+      <div class="acts"><button class="btn primary" id="helpClose" data-i18n="gotIt">我知道了</button></div>
+    </div>
+  </div>
+
+  <!-- 通知权限说明弹窗（首次启动，手机端） -->
+  <div class="modal-overlay" id="notifAskModal">
+    <div class="modal">
+      <h3>🔔 <span data-i18n="notifTitle">开启寻亲通知</span></h3>
+      <div class="terms-body">
+        <p data-i18n="notifDesc">本工具内置「宝贝回家」公益模块，开启通知后将在有新的走失儿童信息时提醒您，帮助扩散寻亲线索。</p>
+        <p class="muted" data-i18n="notifPromise">仅用于推送走失儿童信息，不推送广告。</p>
+      </div>
+      <div class="acts">
+        <button class="btn" id="notifLater" data-i18n="later">暂不</button>
+        <button class="btn primary" id="notifAllow" data-i18n="allow">允许</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 启动公益弹窗（无通知权限时每次启动） -->
+  <div class="modal-overlay" id="startupModal">
+    <div class="modal bbhj-modal">
+      <div class="countdown" id="startupCountdown">3</div>
+      <div class="bbhj-card">
+        <img id="startupPhoto" alt="照片" />
+        <div class="bbhj-card-info">
+          <div class="bbhj-card-name"><span id="startupName"></span><span class="detail-gender" id="startupGender"></span></div>
+          <div class="bbhj-card-line" id="startupPlace"></div>
+          <div class="bbhj-card-line" id="startupTime"></div>
+        </div>
+      </div>
+      <div class="src-watermark" id="startupWatermark">数据来源：起零数据公益API</div>
+      <div class="acts">
+        <button class="btn" id="startupSkip" data-i18n="skip">跳过</button>
+        <button class="btn primary" id="startupFollow" data-i18n="followLater">稍后关注</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 播放记录弹窗 -->
+  <div class="modal-overlay" id="historyModal">
+    <div class="modal history-modal">
+      <h3>📋 <span data-i18n="playHistory">播放记录</span></h3>
+      <div class="history-toolbar">
+        <div class="seg small" id="historySortSeg">
+          <button class="active" data-sort="desc" data-i18n="newFirst">最新优先</button>
+          <button data-sort="asc" data-i18n="oldFirst">最旧优先</button>
+        </div>
+        <span class="history-count" id="historyCount"></span>
+      </div>
+      <div class="history-list" id="historyList"></div>
+      <div class="history-foot">
+        <button class="btn small" id="exportHistoryBtn" data-i18n="export">导出记录</button>
+        <button class="btn small danger" id="clearHistoryBtn" data-i18n="clearAll">清空历史</button>
+        <button class="btn small" id="historyClose" data-i18n="close">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 清空历史二次确认 -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal small-modal">
+      <h3 data-i18n="confirmTitle">确认操作</h3>
+      <p id="confirmText" data-i18n="confirmClearHistory">确定要清空全部播放记录吗？此操作不可恢复。</p>
+      <div class="acts">
+        <button class="btn" id="confirmCancel" data-i18n="cancel">取消</button>
+        <button class="btn danger" id="confirmOk" data-i18n="confirm">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 关注列表态窗 -->
+  <div class="modal-overlay" id="followModal">
+    <div class="modal history-modal">
+      <h3>💗 <span data-i18n="followListTitle">关注列表</span></h3>
+      <div class="history-list" id="followList"></div>
+      <div class="acts"><button class="btn" id="followClose" data-i18n="close">关闭</button></div>
+    </div>
+  </div>
+
+  <!-- 开源许可弹窗 -->
+  <div class="modal-overlay" id="licenseModal">
+    <div class="modal license-modal">
+      <h3 data-i18n="ossLicenseTitle">开源许可</h3>
+      <p class="license-intro">本软件使用了以下开源组件：</p>
+      <div class="license-item">
+        <p>1. jiangsu-safety-platform-skip（基于 Apache License 2.0）—— <a href="#" class="lic-link" data-lic="apache">查看协议全文</a><br>
+           作者：Scwizard-BA4TLH · <a href="https://github.com/Scwizard/jiangsu-safety-platform-skip" target="_blank">GitHub</a></p>
+        <p>2. Auroraqua-UI（基于 Mozilla Public License 2.0）—— <a href="#" class="lic-link" data-lic="mpl">查看协议全文</a><br>
+           作者：micromimo · <a href="https://github.com/micromimo/Auroraqua-UI" target="_blank">GitHub</a></p>
+      </div>
+      <div class="acts"><button class="btn primary" id="licenseClose" data-i18n="close">关闭</button></div>
+    </div>
+  </div>
+
+  <!-- 第三方声明弹窗（v2.1.1 二级菜单） -->
+  <div class="modal-overlay" id="noticeModal">
+    <div class="modal license-modal">
+      <h3 data-i18n="thirdParty">第三方声明（NOTICE）</h3>
+      <div class="license-item">
+        <p>1. jiangsu-safety-platform-skip — 作者：Scwizard-BA4TLH（哔哩哔哩 UID:403074730）<br>
+           <a href="https://github.com/Scwizard/jiangsu-safety-platform-skip" target="_blank">github.com/Scwizard/jiangsu-safety-platform-skip</a> · Apache License 2.0</p>
+        <p>2. Auroraqua-UI — 作者：micromimo（哔哩哔哩 UID:1998322381）<br>
+           <a href="https://github.com/micromimo/Auroraqua-UI" target="_blank">github.com/micromimo/Auroraqua-UI</a> · Mozilla Public License 2.0</p>
+      </div>
+      <div class="acts"><button class="btn primary" id="noticeClose" data-i18n="close">关闭</button></div>
+    </div>
+  </div>
+
+  <!-- 公益数据致谢弹窗（v2.1.1 二级菜单） -->
+  <div class="modal-overlay" id="thanksModal">
+    <div class="modal small-modal">
+      <h3 data-i18n="charityThanks">公益数据致谢</h3>
+      <div class="terms-body">
+        <p data-i18n="thanksText">特别鸣谢「姬长信API」与「起零数据」公益接口提供方，以及宝贝回家寻亲网。</p>
+        <p class="muted" data-i18n="thanksSub">本模块所有走失儿童信息均来自公益接口随机返回，旨在帮助扩散寻亲线索。</p>
+      </div>
+      <div class="acts"><button class="btn primary" id="thanksClose" data-i18n="close">关闭</button></div>
+    </div>
+  </div>
+
+  <!-- 协议全文弹窗 -->
+  <div class="modal-overlay" id="licenseTextModal">
+    <div class="modal license-text-modal">
+      <h3 id="licenseTitle">Apache License 2.0</h3>
+      <pre class="license-text" id="licenseText"></pre>
+      <div class="acts"><button class="btn primary" id="licenseTextClose" data-i18n="close">关闭</button></div>
+    </div>
+  </div>
+
+  <!-- 海报弹窗 -->
+  <div class="modal-overlay" id="posterModal">
+    <div class="modal poster-modal">
+      <h3 data-i18n="sharePoster">寻亲海报</h3>
+      <div class="poster-wrap"><img id="posterImg" alt="海报" /></div>
+      <div class="acts">
+        <button class="btn" id="posterClose" data-i18n="close">关闭</button>
+        <button class="btn primary" id="posterSave" data-i18n="saveShare">保存 / 分享</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 通用选择器弹窗（v2.1：学院/专业自定义选择，替代安卓原生下拉框） -->
+  <div class="modal-overlay" id="pickerModal">
+    <div class="modal small-modal picker-modal">
+      <h3 id="pickerTitle">选择</h3>
+      <div class="picker-list" id="pickerList"></div>
+      <div class="acts"><button class="btn" id="pickerClose" data-i18n="cancel">取消</button></div>
+    </div>
+  </div>
+
+  <!-- 外部链接确认弹窗（v2.1：链接不再直接跳走，避免应用内返回错乱） -->
+  <div class="modal-overlay" id="linkModal">
+    <div class="modal small-modal">
+      <h3 data-i18n="linkTitle">打开外部链接</h3>
+      <div class="terms-body">
+        <p data-i18n="linkDesc">即将在系统浏览器中打开以下链接：</p>
+        <p class="eg" id="linkUrl" style="word-break:break-all"></p>
+      </div>
+      <div class="acts">
+        <button class="btn" id="linkCancel" data-i18n="cancel">取消</button>
+        <button class="btn primary" id="linkOpen" data-i18n="linkOpenBtn">浏览器打开</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 免责声明弹窗 -->
+  <div class="modal-overlay" id="termsModal">
+    <div class="modal terms-modal">
+      <h3 data-i18n="disclaimer">免责声明</h3>
+      <div class="terms-body">
+        <p><span class="terms-title">一、工具性质</span>本工具为个人技术学习使用，不用于完成账号学习一键完成使用，不用于批量刷账号、刷课程等违规行为，不代替正常学习过程。</p>
+        <p><span class="terms-title">二、使用限制</span>本工具仅供个人学习使用，不得用于以下用途：<br>1. 批量注册账号、刷账号；<br>2. 批量刷课程、代刷代考等商业行为；<br>3. 任何违反平台使用协议或法律法规的行为。</p>
+        <p><span class="terms-title">三、责任声明</span>本工具创作者不对使用者因不当使用本工具而产生的任何直接或间接后果承担责任。使用者应自行评估并承担使用本工具的风险和责任。</p>
+        <p><span class="terms-title">四、数据安全</span>本工具不会收集、上传或分享任何用户数据。所有操作均在本地完成，数据存储于使用者本机。</p>
+        <p><span class="terms-title">五、条款变更</span>创作者保留随时修改本声明的权利，修改后的声明自发布之日起生效。修改声明详见项目地址（<a href="https://github.com/Leeyus-lab/jsaq" target="_blank" class="disclaimer-link">https://github.com/Leeyus-lab/jsaq</a>）。</p>
+      </div>
+      <div class="acts">
+        <button class="btn primary" id="termsAgreeBtn" data-i18n="agreeBtn">我已知晓并同意</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 结业证书弹窗 -->
+  <div class="modal-overlay" id="certModal">
+    <div class="modal cert-modal">
+      <h3 data-i18n="certificate">结业证书</h3>
+      <p class="cert-tip" data-i18n="certTip">考试满分！结业证书已生成，点击下方按钮保存到本地。</p>
+      <div class="cert-img-wrap"><img id="certImg" alt="结业证书" /></div>
+      <div class="cert-path" id="certPath"></div>
+      <div class="acts">
+        <a class="btn primary" id="certDownload" download="结业证书.png" data-i18n="save">保存到本地</a>
+        <button class="btn" id="certClose" data-i18n="close">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="db.js"></script>
+  <script src="licenses.js"></script>
+  <script src="bbhj.js"></script>
+  <script src="settings.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
